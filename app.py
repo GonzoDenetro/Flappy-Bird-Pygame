@@ -12,7 +12,11 @@ def draw_game(screen, bg, bg2):
 def run():
     pygame.init()
     
+    #FPS
+    clock = pygame.time.Clock()
+    FPS = 60
     
+    #Screen set up
     screen_width = 664
     screen_height = 600
     
@@ -26,6 +30,8 @@ def run():
     
     running = True
     while running:
+        #Frame Rate
+        clock.tick(60)
         
         draw_game(screen, background, background_floor)
         
