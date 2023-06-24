@@ -1,10 +1,10 @@
 import pygame
 
 
-def draw_game(screen, bg, bg2):
+def draw_game(screen, bg, bg2, scroll):
     #Draw Background
     screen.blit(bg, [0, 0])
-    screen.blit(bg2, [0, 504])
+    screen.blit(bg2, [scroll, 504])
     
     pygame.display.update()
 
@@ -23,9 +23,13 @@ def run():
     screen = pygame.display.set_mode([screen_width, screen_height])
     pygame.display.set_caption(("Flappy Bird"))
     
+    #Game Variables
+    scroll_speed = 4
+    ground_scroll = 0
+    
     #Load Images
     background = pygame.transform.scale(pygame.image.load("./Assets/bg.png"), [screen_width, 504])
-    background_floor = pygame.transform.scale(pygame.image.load("./Assets/ground.png"), [screen_width, 96])
+    background_floor = pygame.transform.scale(pygame.image.load("./Assets/ground.png"), [screen_width + 35, 96])
     
     
     running = True
@@ -33,7 +37,14 @@ def run():
         #Frame Rate
         clock.tick(60)
         
-        draw_game(screen, background, background_floor)
+        #Scroll Background
+        ground_scroll -= scroll_speed
+        if abs(ground_scroll) > 35:
+            ground_scroll = 0
+        
+        
+        
+        draw_game(screen, background, background_floor, ground_scroll)
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
