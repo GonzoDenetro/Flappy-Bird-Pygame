@@ -12,12 +12,15 @@ class Bird(pygame.sprite.Sprite):
         ]
         self.counter = 0
         self.index = 0
-        self.cooldown = 5
+        self.cooldown = 6
         self.image = self.images[self.index]
         self.rect = self.image.get_rect() #Hacemos un rectángulo de nuestra imágen.
         self.rect.center = [x, y] #Le damos su posición
+        self.velocity_y = 0
+        self.flying = False
         
     def animation(self):
+        self.movement()
         self.counter += 1
         #Hacemos un cooldown antes de cambiar de imagen
         if self.counter > self.cooldown:
@@ -26,7 +29,28 @@ class Bird(pygame.sprite.Sprite):
             if self.index >= len(self.images):
                 self.index = 0
         self.image = self.images[self.index]
-
+        
+        #Rotamos la imagen cuandi este de caída
+        self.image = pygame.transform.rotate(self.images[self.index], self.velocity_y * -2)
+    
+    def movement(self):
+        #En nuestro pajara tenemos dos fuerzas que están actuando,
+        #Una es la gravedad que esta actuando constantemente.
+        #En cada iteración la velocidad con la que cae va aumentando
+       #Gravity
+       if self.flying:
+            self.velocity_y += 0.5
+            if self.velocity_y > 8:
+                self.velocity_y = 0    
+        
+        #Jump
+        #Mientras sea menor el valor "y" del pajaro a 504 ira aumentado en "y"
+       if self.rect.bottom < 504: 
+            self.rect.y += int(self.velocity_y) 
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_SPACE] and self.rect.y > 0:
+                self.rect.y -= 10
+                print("AARINNA")
 
 def draw_game(screen, bg, bg2, scroll, bird_arr, bird):
     #Draw Background
@@ -83,6 +107,11 @@ def run():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            #JUMP
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                 flappy.movement()
+                 flappy.flying = True
     
     pygame.quit()
     
