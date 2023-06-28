@@ -74,6 +74,8 @@ class Pipe(pygame.sprite.Sprite):
     
     def update(self, speed):
         self.rect.x -= speed
+        if self.rect.x + 30 < 0:
+            self.kill()
 
 
 def draw_game(screen, bg, bg2, scroll, bird_arr, bird, pipe_group):
