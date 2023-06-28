@@ -57,6 +57,15 @@ class Bird(pygame.sprite.Sprite):
                     self.rect.y -= 10
                     print("AARINNA")
 
+
+class Pipe(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('./Assets/pipe.png')
+        self.rect = self.image.get_rect()
+        self.rect.topleft = [x, y]
+
+
 def draw_game(screen, bg, bg2, scroll, bird_arr, bird):
     #Draw Background
     screen.blit(bg, [0, 0])
