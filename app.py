@@ -1,4 +1,5 @@
 import pygame
+import random
 
 
 class Bird(pygame.sprite.Sprite):
@@ -108,7 +109,7 @@ def run():
     scroll_speed = 4
     ground_scroll = 0
     pipe_frecuency = 1500 #Milisegundos
-    last_pipe = pygame.time.get_ticks()
+    last_pipe = pygame.time.get_ticks() - pipe_frecuency
     
     #Load Images
     background = pygame.transform.scale(pygame.image.load("./Assets/Bckground/bg.png"), [screen_width, 504])
@@ -121,11 +122,6 @@ def run():
     flappy = Bird(100, int(screen_height / 2))
     bird_group.add(flappy) #Agregamos a nuestro grupo
     
-    bottom_pipe = Pipe(300, int(screen_height / 2), -1)
-    pipe_group.add(bottom_pipe)
-    
-    top_pipe = Pipe(300, int(screen_height /2), 1)
-    pipe_group.add(top_pipe)
     
     
     running = True
@@ -134,13 +130,14 @@ def run():
         clock.tick(FPS)
         
         #Scroll Background
-        if not flappy.game_over:
+        if not flappy.game_over and flappy.flying == True:
             
             #Generate new pipes
             time_now = pygame.time.get_ticks()
             if time_now - last_pipe > pipe_frecuency:
-                bottom_pipe = Pipe(screen_width, int(screen_height / 2), -1)
-                top_pipe = Pipe(screen_width, int(screen_height /2), 1)
+                pipe_height = random.randint(-100, 100)
+                bottom_pipe = Pipe(screen_width, int(screen_height / 2) + pipe_height, -1)
+                top_pipe = Pipe(screen_width, int(screen_height /2) + pipe_height, 1)
                 pipe_group.add(bottom_pipe)
                 pipe_group.add(top_pipe)
                 last_pipe = time_now
