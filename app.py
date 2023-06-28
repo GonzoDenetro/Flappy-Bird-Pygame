@@ -63,12 +63,13 @@ class Pipe(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load('./Assets/pipe.png')
         self.rect = self.image.get_rect()
+        pipe_gap = 150
         #if posisiotn  1  is from the top, -1 from the bottom
         if position == 1:
             self.image = pygame.transform.flip(self.image, False, True)
-            self.rect.bottomleft = [x, y]
+            self.rect.bottomleft = [x, y - int(pipe_gap / 2)]
         elif position == -1:
-            self.rect.topleft = [x, y]
+            self.rect.topleft = [x, y + int(pipe_gap / 2)]
 
 
 def draw_game(screen, bg, bg2, scroll, bird_arr, bird, pipe_group):
