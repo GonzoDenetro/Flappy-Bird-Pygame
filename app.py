@@ -70,6 +70,9 @@ class Pipe(pygame.sprite.Sprite):
             self.rect.bottomleft = [x, y - int(pipe_gap / 2)]
         elif position == -1:
             self.rect.topleft = [x, y + int(pipe_gap / 2)]
+    
+    def update(self, speed):
+        self.rect.x -= speed
 
 
 def draw_game(screen, bg, bg2, scroll, bird_arr, bird, pipe_group):
@@ -82,6 +85,7 @@ def draw_game(screen, bg, bg2, scroll, bird_arr, bird, pipe_group):
     
     bird.animation()
     bird_arr.draw(screen) #Dibujamos a nuestro pajaro, el método drwa() lo heredamos de Sprite
+    pipe_group.update(4)
 
     pygame.display.update()
 
