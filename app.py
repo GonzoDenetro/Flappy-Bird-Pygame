@@ -107,6 +107,8 @@ def run():
     #Game Variables
     scroll_speed = 4
     ground_scroll = 0
+    pipe_frecuency = 1500 #Milisegundos
+    last_pipe = pygame.time.get_ticks()
     
     #Load Images
     background = pygame.transform.scale(pygame.image.load("./Assets/Bckground/bg.png"), [screen_width, 504])
@@ -133,6 +135,16 @@ def run():
         
         #Scroll Background
         if not flappy.game_over:
+            
+            #Generate new pipes
+            time_now = pygame.time.get_ticks()
+            if time_now - last_pipe > pipe_frecuency:
+                bottom_pipe = Pipe(screen_width, int(screen_height / 2), -1)
+                top_pipe = Pipe(screen_width, int(screen_height /2), 1)
+                pipe_group.add(bottom_pipe)
+                pipe_group.add(top_pipe)
+                last_pipe = time_now
+            
             #Si el juego llega estar en game over ya no habra scroll
             ground_scroll -= scroll_speed
             if abs(ground_scroll) > 35:
