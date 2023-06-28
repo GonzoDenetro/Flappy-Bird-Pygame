@@ -44,15 +44,15 @@ class Bird(pygame.sprite.Sprite):
         #En cada iteración la velocidad con la que cae va aumentando
        #Gravity
        if self.flying:
-            self.velocity_y += 0.5
-            if self.velocity_y > 8:
-                self.velocity_y = 0    
+        self.velocity_y += 0.5
+        if self.velocity_y > 8:
+            self.velocity_y = 0    
         
         #Jump
         #Mientras sea menor el valor "y" del pajaro a 504 ira aumentado en "y"
+        if self.rect.bottom < 504: 
+            self.rect.y += int(self.velocity_y) 
        if not self.game_over:
-            if self.rect.bottom < 504: 
-                self.rect.y += int(self.velocity_y) 
                 keys = pygame.key.get_pressed()
                 if keys[pygame.K_SPACE] and self.rect.y > 0:
                     self.rect.y -= 10
@@ -88,7 +88,6 @@ def draw_game(screen, bg, bg2, scroll, bird_arr, bird, pipe_group):
     
     bird.animation()
     bird_arr.draw(screen) #Dibujamos a nuestro pajaro, el método drwa() lo heredamos de Sprite
-    pipe_group.update(4)
 
     pygame.display.update()
 
@@ -134,6 +133,10 @@ def run():
         #Scroll Background
         if not flappy.game_over and flappy.flying == True:
             
+            #Collision
+            if pygame.sprite.groupcollide(bird_group, pipe_group, False, False):
+                flappy.game_over = True
+            
             #Generate new pipes
             time_now = pygame.time.get_ticks()
             if time_now - last_pipe > pipe_frecuency:
@@ -149,6 +152,7 @@ def run():
             if abs(ground_scroll) > 35:
                 ground_scroll = 0
             
+            pipe_group.update(scroll_speed)
         #Game Over
         if flappy.rect.bottom >= 504:
             flappy.game_over = True
