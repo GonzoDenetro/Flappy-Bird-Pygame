@@ -66,14 +66,17 @@ class Pipe(pygame.sprite.Sprite):
         self.rect.topleft = [x, y]
 
 
-def draw_game(screen, bg, bg2, scroll, bird_arr, bird):
+def draw_game(screen, bg, bg2, scroll, bird_arr, bird, pipe_group):
     #Draw Background
     screen.blit(bg, [0, 0])
+    #Draw Pipe
+    pipe_group.draw(screen)
+    #Draw scrolling background of the floor
     screen.blit(bg2, [scroll, 504])
     
     bird.animation()
     bird_arr.draw(screen) #Dibujamos a nuestro pajaro, el método drwa() lo heredamos de Sprite
-    
+
     pygame.display.update()
 
 
@@ -101,8 +104,14 @@ def run():
     
     
     bird_group = pygame.sprite.Group() #Creamos un grupo para nuestros sprites
+    pipe_group = pygame.sprite.Group() #Grupo para nuestros Pipes
+    
     flappy = Bird(100, int(screen_height / 2))
     bird_group.add(flappy) #Agregamos a nuestro grupo
+    
+    bottom_pipe = Pipe(300, int(screen_height / 2))
+    pipe_group.add(bottom_pipe)
+    
     
     running = True
     while running:
@@ -121,7 +130,7 @@ def run():
             flappy.game_over = True
             flappy.flying = False
 
-        draw_game(screen, background, background_floor, ground_scroll, bird_group, flappy)
+        draw_game(screen, background, background_floor, ground_scroll, bird_group, flappy, pipe_group)
         
         
         for event in pygame.event.get():
