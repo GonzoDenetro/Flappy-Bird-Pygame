@@ -52,6 +52,7 @@ class Bird(pygame.sprite.Sprite):
         #Mientras sea menor el valor "y" del pajaro a 504 ira aumentado en "y"
         if self.rect.bottom < 504: 
             self.rect.y += int(self.velocity_y) 
+       
        if not self.game_over:
                 keys = pygame.key.get_pressed()
                 if keys[pygame.K_SPACE] and self.rect.y > 0:
@@ -78,6 +79,31 @@ class Pipe(pygame.sprite.Sprite):
             self.kill()
 
 
+class Button:
+    def __init__(self, x, y):
+        self.image = pygame.image.load("./Assets/restart.png")
+        self.rect = self.image.get_rect()
+        self.rect.topleft = [x, y]
+        self.clicked = False
+    
+    def draw(self, screen):
+        #Drawe buton
+        screen.blit(self.image, [self.rect.x , self.rect.y])
+
+    def click(self):
+        #Get mouse position
+        position = pygame.mouse.get_pos()
+        
+        #Check if the mouse is over the button
+        if self.rect.collidepoint(position):
+            if pygame.mouse.get_pressed()[0] == 1:
+                self.clicked = True
+                print("jjjjjjjjjjjjj")
+            else:
+                self.cliked = False
+        return self.clicked
+
+
 def draw_text(text, width, screen):
     font = pygame.font.SysFont("Bauhaus 93", 60)
     texto = font.render(str(text), True, (255, 255, 255))
@@ -86,7 +112,7 @@ def draw_text(text, width, screen):
     screen.blit(texto, textRect)
 
 
-def draw_game(screen, bg, bg2, scroll, bird_arr, bird, pipe_group, score, width):
+def draw_game(screen, bg, bg2, scroll, bird_arr, bird, pipe_group, score, width, button):
     #Draw Background
     screen.blit(bg, [0, 0])
     #Draw Pipe
@@ -98,7 +124,15 @@ def draw_game(screen, bg, bg2, scroll, bird_arr, bird, pipe_group, score, width)
     bird_arr.draw(screen) #Dibujamos a nuestro pajaro, el método drwa() lo heredamos de Sprite
 
     draw_text(score, width, screen)
+    if bird.game_over:
+        button.draw(screen)
     pygame.display.update()
+    
+    
+def reset_game(pipe_group, bird, height):
+    pipe_group.empty()
+    bird.rect.x = 100
+    bird.rect.y = height // 2
 
 
 def run():
@@ -127,14 +161,13 @@ def run():
     background = pygame.transform.scale(pygame.image.load("./Assets/Bckground/bg.png"), [screen_width, 504])
     background_floor = pygame.transform.scale(pygame.image.load("./Assets/Bckground/ground.png"), [screen_width + 35, 96])
     
-    
     bird_group = pygame.sprite.Group() #Creamos un grupo para nuestros sprites
     pipe_group = pygame.sprite.Group() #Grupo para nuestros Pipes
     
     flappy = Bird(100, int(screen_height / 2))
     bird_group.add(flappy) #Agregamos a nuestro grupo
     
-    
+    button = Button(screen_width // 2, screen_height // 2)
     
     running = True
     while running:
@@ -182,14 +215,21 @@ def run():
             
             pipe_group.update(scroll_speed)
             #print(len(pipe_group))
-        #Game Over
-        if flappy.rect.bottom >= 504:
-            flappy.game_over = True
-            flappy.flying = False
-
-        draw_game(screen, background, background_floor, ground_scroll, bird_group, flappy, pipe_group, score, screen_width)
+            
+            #Game Over
+            if flappy.rect.bottom >= 504:
+                flappy.game_over = True
+                flappy.flying = False
+                
+        elif flappy.game_over == True:
+            if button.click():
+                reset_game(pipe_group, flappy, screen_height)
+                score = 0
+                flappy.game_over = False
+    
+        draw_game(screen, background, background_floor, ground_scroll, bird_group, flappy, pipe_group, score, screen_width, button)
         
-        
+                
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
