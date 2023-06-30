@@ -56,7 +56,7 @@ class Bird(pygame.sprite.Sprite):
                 keys = pygame.key.get_pressed()
                 if keys[pygame.K_SPACE] and self.rect.y > 0:
                     self.rect.y -= 10
-                    print("AARINNA")
+                    #print("AARINNA")
 
 
 class Pipe(pygame.sprite.Sprite):
@@ -74,11 +74,19 @@ class Pipe(pygame.sprite.Sprite):
     
     def update(self, speed):
         self.rect.x -= speed
-        if self.rect.x + 30 < 0:
+        if self.rect.x < -80:
             self.kill()
 
 
-def draw_game(screen, bg, bg2, scroll, bird_arr, bird, pipe_group):
+def draw_text(text, width, screen):
+    font = pygame.font.SysFont("Bauhaus 93", 60)
+    texto = font.render(str(text), True, (255, 255, 255))
+    textRect = texto.get_rect()
+    textRect.center = (width//2, 40)
+    screen.blit(texto, textRect)
+
+
+def draw_game(screen, bg, bg2, scroll, bird_arr, bird, pipe_group, score, width):
     #Draw Background
     screen.blit(bg, [0, 0])
     #Draw Pipe
@@ -89,6 +97,7 @@ def draw_game(screen, bg, bg2, scroll, bird_arr, bird, pipe_group):
     bird.animation()
     bird_arr.draw(screen) #Dibujamos a nuestro pajaro, el método drwa() lo heredamos de Sprite
 
+    draw_text(score, width, screen)
     pygame.display.update()
 
 
@@ -111,6 +120,8 @@ def run():
     ground_scroll = 0
     pipe_frecuency = 1500 #Milisegundos
     last_pipe = pygame.time.get_ticks() - pipe_frecuency
+    score = 0
+    pass_pipe = False
     
     #Load Images
     background = pygame.transform.scale(pygame.image.load("./Assets/Bckground/bg.png"), [screen_width, 504])
@@ -146,6 +157,23 @@ def run():
                 pipe_group.add(bottom_pipe)
                 pipe_group.add(top_pipe)
                 last_pipe = time_now
+                #print(len(pipe_group))
+            
+            #Score
+            #Para checar si ya paso el pipe vamos a checar primero si el lado izquierdo de nuestro pajaro
+            #paso el lado izquierdo del pipe, y luego checamos que el lado izquierdo del pajaro haya pasado
+            #el lado derecho del pipe
+            if len(pipe_group) > 0:
+                if bird_group.sprites()[0].rect.left > pipe_group.sprites()[0].rect.left\
+			    and bird_group.sprites()[0].rect.right < pipe_group.sprites()[0].rect.right\
+			    and pass_pipe == False:
+                    pass_pipe = True
+                
+                if pass_pipe == True:
+                    if bird_group.sprites()[0].rect.left > pipe_group.sprites()[0].rect.right:
+                        score += 1
+                        pass_pipe = False
+            print(score)
             
             #Si el juego llega estar en game over ya no habra scroll
             ground_scroll -= scroll_speed
@@ -153,12 +181,13 @@ def run():
                 ground_scroll = 0
             
             pipe_group.update(scroll_speed)
+            #print(len(pipe_group))
         #Game Over
         if flappy.rect.bottom >= 504:
             flappy.game_over = True
             flappy.flying = False
 
-        draw_game(screen, background, background_floor, ground_scroll, bird_group, flappy, pipe_group)
+        draw_game(screen, background, background_floor, ground_scroll, bird_group, flappy, pipe_group, score, screen_width)
         
         
         for event in pygame.event.get():
@@ -167,8 +196,8 @@ def run():
             #JUMP
             elif event.type == pygame.KEYDOWN and not flappy.game_over:
                 if event.key == pygame.K_SPACE:
-                 flappy.movement()
-                 flappy.flying = True
+                    flappy.movement()
+                    flappy.flying = True
     
     pygame.quit()
     
